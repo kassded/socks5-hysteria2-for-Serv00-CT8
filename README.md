@@ -30,11 +30,12 @@ npm uninstall -g pm2
 ## 清理服务器
 
 ```bash
-pkill -kill -u 用户名
+pkill -kill -u $(whoami)
 chmod -R 755 ~/* 
 chmod -R 755 ~/.* 
 rm -rf ~/.* 
 rm -rf ~/*
+crontab -r -f
 ```
 
 ## Github Actions保活
