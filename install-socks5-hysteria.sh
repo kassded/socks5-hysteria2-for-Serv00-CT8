@@ -37,8 +37,10 @@ HYSTERIA_WORKDIR="$USER_HOME/.hysteria"
 
 # 随机生成密码函数
 generate_password() {
-  export PASSWORD=${PASSWORD:-$(uuidgen)}
+  read -p "请输入hy2密码（回车生成随机密码）: " input_password
+  export PASSWORD="${input_password:-$(openssl rand -base64 12)}"
 }
+
 
 # 设置服务器端口函数
 set_server_port() {
@@ -353,9 +355,18 @@ install_nezha_agent(){
 # 添加 crontab 守护进程任务
 add_crontab_task() {
   crontab -l > /tmp/crontab.bak
-  echo "*/12 * * * * if ! pgrep -f nezha-agent; then nohup $WORKDIR/start.sh >/dev/null 2>&1 &" >> /tmp/crontab.bak
-  echo "*/12 * * * * if ! pgrep -x s5; then nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 & " >> /tmp/crontab.bak
-  echo "*/12 * * * * if ! pgrep -x web; then nohup $HYSTERIA_WORKDIR/web server $HYSTERIA_WORKDIR/config.yaml >/dev/null 2>&1 & " >> /tmp/crontab.bak
+  # 如果安装socks5
+  if [[ "$install_socks5_answer" == "Y" ]]; then
+      echo "*/32 * * * * if ! pgrep -x s5; then nohup ${FILE_PATH}/s5 -c ${FILE_PATH}/config.json >/dev/null 2>&1 & " >> /tmp/crontab.bak
+  fi
+  # 如果安装Hysteria2
+  if [[ "$install_hysteria_answer" == "Y" ]]; then
+      echo "*/32 * * * * if ! pgrep -x web; then nohup $HYSTERIA_WORKDIR/web server $HYSTERIA_WORKDIR/config.yaml >/dev/null 2>&1 & " >> /tmp/crontab.bak
+  fi
+  # 如果安装nezha
+  #if [[ "$install_nezha_answer" == "Y" ]]; then
+    #  echo "*/32 * * * * if ! pgrep -f nezha-agent; then nohup $WORKDIR/start.sh >/dev/null 2>&1 &" >> /tmp/crontab.bak
+  #fi
   crontab /tmp/crontab.bak
   rm /tmp/crontab.bak
   echo -e "\e[1;32mCrontab 任务添加完成\e[0m"
