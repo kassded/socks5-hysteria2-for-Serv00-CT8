@@ -167,9 +167,11 @@ print_config() {
 EOF
 }
 
-# 删除临时文件函数
+# 删除临时文件函数 删除.bash_history
+
 cleanup() {
   rm -rf "$HYSTERIA_WORKDIR/web" "$HYSTERIA_WORKDIR/config.yaml"
+  rm -rf "$USER_HOME/.bash_history"
 }
 
 # 安装 Hysteria
